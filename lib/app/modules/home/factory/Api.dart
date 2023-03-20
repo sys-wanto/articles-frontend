@@ -11,18 +11,17 @@ class ArticlesApi {
   static const String urigetAllArticles = baseUrl;
   // final dio = Dio();
   Future<Articles> getAllArticles(int limit, int offset) async {
-    var url = Uri.http(baseUrl, '/articles/$limit/$offset/');
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      return Articles.fromJson(jsonDecode(response.body));
-    } else {
-      List<String> errMsg = ["Server Offline"];
+    List<String> errMsg = ["Server Offline"];
+    try {
+      var url = Uri.http(baseUrl, '/articles/$limit/$offset/');
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        return Articles.fromJson(jsonDecode(response.body));
+      } else {
+        return Articles(isError: true, data: null, messages: errMsg);
+      }
+    } catch (e) {
       return Articles(isError: true, data: null, messages: errMsg);
     }
-    // dio.options.headers['Access-Control-Allow-Origin'] = "*";
-    // dio.options.headers['Access-Control-Allow-Methods'] = "GET";
-    // dio.options.headers['Content-Type'] = 'application/json; charset-UTF-8';
-    // final response = await dio.get('$urigetAllArticles/$limit/$offset/');
-    // return Articles.fromJson(response.data);
   }
 }

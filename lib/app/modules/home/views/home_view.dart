@@ -15,39 +15,87 @@ class HomeView extends GetView<HomeController> {
         // ctlBuilder.initArticle(10, 10);
         return Scaffold(
           appBar: AppBar(title: const Text('Article')),
-          body: FutureBuilder(
-              future: ctlBuilder.allArticles,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  Articles data = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: data.data!.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        color: Colors.yellow[50],
-                        elevation: 8.0,
-                        margin: EdgeInsets.all(4.0),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Center(child: Text(data.data![index].title!)),
-                              Text(
-                                  '${data.data![index].content!.substring(0, 200)}...')
-                            ],
-                          ),
+          body: Obx(() {
+            if (ctlBuilder.loaded.value) {
+              List<Data> articleData = ctlBuilder.allArticles.value.data!;
+              return ListView.builder(
+                itemCount: articleData.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.yellow[50],
+                    elevation: 8.0,
+                    margin: const EdgeInsets.all(4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                                '${articleData[index].title!} - ${articleData[index].id.toString()}'),
+                            Spacer(flex: 2),
+                            Text(
+                                '${articleData[index].content!.substring(0, 200)}...')
+                          ],
                         ),
-                      );
-                      // return Text(data.data![index].title!);
-                    },
+                      ),
+                    ),
                   );
-                }
-                return const CircularProgressIndicator();
-              }),
+                  // return Text(data.data![index].title!);
+                },
+              );
+            }
+
+            return CircularProgressIndicator();
+          }),
+          bottomNavigationBar: Obx(() {
+            if (controller.loaded.value) {
+              print(controller.Pagination.value.length);
+              return Container(
+                alignment: Alignment.center,
+                width: double.infinity,
+                height: kToolbarHeight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        controller.initArticle(
+                            10, controller.allArticles.value.vars!.prevPage!);
+                      },
+                      child: Text("Prev"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.initArticle(10, 0);
+                      },
+                      child: Text("1"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.initArticle(10, 10);
+                      },
+                      child: Text("2"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        controller.initArticle(
+                            10, controller.allArticles.value.vars!.nextPage!);
+                      },
+                      child: Text("Next"),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return Container();
+          }),
         );
       },
     );
