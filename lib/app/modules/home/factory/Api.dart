@@ -24,4 +24,8 @@ class ArticlesApi {
       return Articles(isError: true, data: null, messages: errMsg);
     }
   }
+
+  String baseUri() {
+    return baseUrl;
+  }
 }
